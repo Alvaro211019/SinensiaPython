@@ -1,4 +1,4 @@
-from cliente import Cliente
+from Cliente import Cliente
 
 class Factura:
     def __init__(self, id_factura, cliente):

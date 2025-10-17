@@ -1,4 +1,4 @@
-from persona import Persona
+from Persona import Persona
 
 class Cliente(Persona):
     # Variable estática (contará los clientes creados)
