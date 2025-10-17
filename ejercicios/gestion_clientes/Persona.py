@@ -1,4 +1,3 @@
-# persona.py
 from abc import ABC, abstractmethod
 
 class Persona(ABC):

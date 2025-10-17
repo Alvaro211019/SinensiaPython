@@ -1,4 +1,3 @@
-# factura.py
 from cliente import Cliente
 
 class Factura:
