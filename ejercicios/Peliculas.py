@@ -1,6 +1,6 @@
-# Gestión de lista de películas con diccionario
+# Gestión de lista de películas con diccionario y actualización de presupuestos
 
-peliculas = {}  # Diccionario vacío: {"Película": {"director": ..., "año": ..., "presupuesto": ...}}
+peliculas = {}  # {"Título": {"director": str, "año": int, "presupuesto": float}}
 
 def mostrar_menu():
     print("\nMENÚ DE GESTIÓN DE PELÍCULAS")
@@ -9,11 +9,12 @@ def mostrar_menu():
     print("3. Mostrar todas las películas")
     print("4. Buscar película")
     print("5. Modificar datos de una película")
-    print("6. Salir")
+    print("6. Incrementar presupuestos (%)")
+    print("7. Salir")
 
 while True:
     mostrar_menu()
-    opcion = input("Elige una opción (1-6): ")
+    opcion = input("Elige una opción (1-7): ")
 
     # Añadir película
     if opcion == "1":
@@ -23,12 +24,15 @@ while True:
         else:
             director = input("Introduce el director: ").strip().title()
             año = input("Introduce el año: ").strip()
-            presupuesto = input("Introduce el presupuesto (en millones): ").strip()
-            peliculas[nombre] = {
-                "director": director,
-                "año": año,
-                "presupuesto": presupuesto
-            }
+            try:
+                presupuesto = float(input("Introduce el presupuesto (en millones): ").strip())
+                if presupuesto <= 0:
+                    raise ValueError
+            except ValueError:
+                print("El presupuesto debe ser un número mayor que 0.")
+                continue
+
+            peliculas[nombre] = {"director": director, "año": año, "presupuesto": presupuesto}
             print(f"'{nombre}' se ha añadido correctamente.")
 
     # Eliminar película
@@ -78,17 +82,49 @@ while True:
             if nuevo_año:
                 peliculas[nombre]["año"] = nuevo_año
             if nuevo_presupuesto:
-                peliculas[nombre]["presupuesto"] = nuevo_presupuesto
-
+                try:
+                    presupuesto_float = float(nuevo_presupuesto)
+                    if presupuesto_float > 0:
+                        peliculas[nombre]["presupuesto"] = presupuesto_float
+                    else:
+                        print("El presupuesto debe ser mayor que 0.")
+                except ValueError:
+                    print("Presupuesto inválido. No se cambió.")
             print(f"Datos de '{nombre}' actualizados correctamente.")
         else:
             print(f"No se encontró la película '{nombre}'.")
 
-    # Salir
+    # Incrementar presupuestos (%)
     elif opcion == "6":
+        if not peliculas:
+            print("No hay películas en la lista.")
+        else:
+            try:
+                porcentaje = float(input("Introduce el porcentaje de incremento (0-100): "))
+                if porcentaje <= 0 or porcentaje > 100:
+                    raise ValueError
+            except ValueError:
+                print("Porcentaje inválido. Debe ser un número entre 0 y 100.")
+                continue
+
+            factor = 1 + (porcentaje / 100)
+
+            # Usamos dictionary comprehension para actualizar todos los presupuestos
+            peliculas = {
+                titulo: {
+                    **datos,
+                    "presupuesto": round(datos["presupuesto"] * factor, 2)
+                }
+                for titulo, datos in peliculas.items()
+            }
+
+            print(f"Presupuestos incrementados un {porcentaje}% correctamente.")
+
+    # Salir
+    elif opcion == "7":
         print("Gracias por usar el gestor de películas.")
         break
 
     # Opción inválida
     else:
-        print("Opción no válida. Intenta nuevamente (1-6).")
+        print("Opción no válida. Intenta nuevamente (1-7).")
